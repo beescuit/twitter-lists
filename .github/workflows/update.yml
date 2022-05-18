@@ -1,0 +1,33 @@
+name: Update twitter lists
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      CONSUMER_KEY: '${{ secrets.CONSUMER_KEY }}'
+      CONSUMER_SECRET: '${{ secrets.CONSUMER_SECRET }}'
+      ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'
+      ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET }}'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: src/package-lock.json
+      - run: |
+          cd src
+          npm install
+      - name: Run Update Script
+        run: |
+          cd src
+          npm run start
